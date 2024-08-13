@@ -29,8 +29,8 @@
 
 Para o desenvolvimento do projeto foram utilizados :
 - Arduino
-  - Esp12
-  -Esp8266
+  - Esp12 
+  - Esp8266
 - HomeAssistant Operational System
 	
 

@@ -26,7 +26,7 @@
 
 :construction: Projeto em construção :construction:
 
-#tecnologias-utilizadas
+# Tecnologias-Utilizadas
 
 Para o desenvolvimento do projeto foram utilizados :
 	- Arduino

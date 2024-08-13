@@ -1,0 +1,231 @@
+esphome:
+  name: arcondicionado
+  friendly_name: arcondicionado
+  on_boot:
+   - uart.write: [0x02, 0x69, 0x3] #i
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+  baud_rate: 0
+
+mdns:
+  disabled: false
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "+PTagswDMyeOScv1qjaKRdOvw4ZWVBhGCvb9dBgi4jU="
+  services:
+  - service: power_ac
+    then: 
+      button.press: pw_bt 
+
+ota:
+  - platform: esphome
+    password: "82a3c1f2ab27f7e87677728b1c07163c"
+
+wifi:
+  ssid: consnete
+  password: cons1490
+  manual_ip: 
+    static_ip: 192.168.16.100
+    gateway: 192.168.16.1
+    subnet: 255.255.255.0
+
+  ap:
+    ssid: "arcondicionado"
+    password: "BUuLMc8RPq89"
+
+web_server:
+  port: 80
+  css_url: ""
+  #js_url: https://esphome.io/_static/v2/www.js
+  version: 2
+
+captive_portal:
+#D0 GPIO16
+#D1 GPIO5
+#D2 GPIO4
+#D3 GPIO0
+#D4 GPIO2
+#D5 GPIO14
+#D6 GPIO12
+#D7 GPIO13
+#D8 GPIO15
+
+uart:
+  id: uart_bus
+  rx_pin: 3
+  tx_pin: 1
+  baud_rate: 9600
+  debug:
+    direction: RX
+    dummy_receiver: true
+    after:
+      bytes: 4
+    sequence:
+      - lambda: |-
+         UARTDebug::log_int(direction, bytes, ',');
+         id(Temp_alv).publish_state(bytes[0]); 
+         id(Temp_at).publish_state(bytes[1]); 
+         id(pw).publish_state(bytes[2] & 1);
+         id(pw_sw).publish_state((bytes[2] & 1));         
+         id(ventst).publish_state((bytes[2] & 2));
+         id(vent_sw).publish_state((bytes[2] & 2));         
+         id(clim_sw).publish_state((bytes[2] & 4));
+         id(clim).publish_state((bytes[2] & 4));
+         id(dp_sw).publish_state((bytes[2] & 8));
+         id(clk_sw).publish_state((bytes[2] & 16));
+         id(MSB_sw).publish_state((bytes[2] & 32));
+         id(aquec).publish_state((bytes[3] & 1));
+         id(refri).publish_state((bytes[3] & 2));
+                                                                      
+         
+       
+sensor:
+ - platform: template
+   name: "Temp_alv"
+   id: "Temp_alv"
+   unit_of_measurement: "°C"
+   device_class: "temperature"
+   state_class: "measurement"
+   accuracy_decimals: 1
+ - platform: template
+   name: "Temp_at"
+   id: "Temp_at"
+   unit_of_measurement: "°C"
+   device_class: "temperature"
+   state_class: "measurement"
+   accuracy_decimals: 1
+
+ 
+binary_sensor:
+
+  - platform: template
+    id: "pw"
+    name: "Power"
+    device_class: cold
+
+  - platform: template
+    name: "Ventilação"
+    id: "ventst"
+
+  - platform: template
+    id: "clim"
+    name: "Climatização"
+  
+  - platform: template
+    id: "aquec"
+    name: "Aquecedor"
+
+  - platform: template
+    id: "refri"
+    name: "Congelador"
+
+button:
+  - platform: template
+    id: Temp_Plus
+    name: "Temperatura +"
+    on_press:
+      - uart.write: [0x02, 0x54, 0x3]
+
+  - platform: template
+    id: Temp_Minus
+    name: "Temperatura -"
+    on_press:
+      - uart.write: [0x02, 0x74, 0x3]
+
+  - platform: template
+    id: clim_bt
+    on_press:
+      - uart.write: [0x02, 0x63, 0x3]
+
+  - platform: template
+    id: vent_bt
+    on_press:
+      - uart.write: [0x02, 0x56, 0x3]
+
+
+  - platform: template
+    id: Disp_pw
+    on_press:
+      - uart.write: [0x02, 0x64, 0x3]
+
+  - platform: template
+    id: pw_bt
+    on_press:
+      - uart.write: [0x02, 0x70, 0x3]
+  
+  - platform: template
+    id: clk_bt
+    on_press:
+      - uart.write: [0x02, 0x43, 0x3]
+
+  - platform: template
+    id: msb_bt
+    on_press:
+      - uart.write: [0x02, 0x6D, 0x3]       
+    
+switch:
+  - platform: template
+    id: vent_sw
+    name: "Ventilação Switch"    
+    turn_on_action: 
+      then:
+        - button.press: vent_bt
+    turn_off_action: 
+      then:
+        - button.press: vent_bt
+
+  - platform: template
+    id: dp_sw
+    name: "Display Switch"    
+    turn_on_action: 
+      then:
+        - button.press: Disp_pw
+    turn_off_action: 
+      then:
+        - button.press: Disp_pw
+
+  - platform: template
+    id: pw_sw
+    name: "Power Switch"    
+    turn_on_action: 
+      then:
+        - button.press: pw_bt
+    turn_off_action: 
+      then:
+        - button.press: pw_bt                
+
+  - platform: template
+    id: clim_sw 
+    name: "Climate Switch"
+    turn_off_action: 
+     then:
+      - button.press: clim_bt
+    turn_on_action: 
+     then:
+      - button.press: clim_bt
+
+  - platform: template
+    id: clk_sw 
+    name: "Clock Switch"
+    turn_off_action: 
+     then:
+      - button.press: clk_bt
+    turn_on_action: 
+     then:
+      - button.press: clk_bt
+
+  - platform: template
+    id: MSB_sw 
+    name: "Modo Sono Bom Switch"
+    turn_off_action: 
+     then:
+      - button.press: msb_bt
+    turn_on_action: 
+     then:
+      - button.press: msb_bt

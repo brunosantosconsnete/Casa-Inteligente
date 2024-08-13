@@ -19,8 +19,7 @@
 * [Pessoas Desenvolvedoras do Projeto](#pessoas-desenvolvedoras)
 
 # Descrição-do-Projeto
-
-	Projeto iniciado este ano com o intuito de integrar e controlar a casa diretamente do sistema HomeAssistant sendo pelo computador ou principalmente pelo celular para ter uma comodidade e maior segurança podendo integrar cameras de segurança e sistemas de alarme.
+  Projeto iniciado este ano com o intuito de integrar e controlar a casa diretamente do sistema HomeAssistant sendo pelo computador ou principalmente pelo celular para ter uma comodidade e maior segurança podendo integrar cameras de segurança e sistemas de alarme.
 
 # Status-do-Projeto
 
